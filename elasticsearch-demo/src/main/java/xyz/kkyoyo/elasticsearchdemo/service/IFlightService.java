@@ -12,7 +12,7 @@ import java.util.List;
  * @Date: 2020-4-3
  */
 public interface IFlightService {
-    void createIndex();
+    void createIndex(String index);
 
     void deleteIndex(String index);
 
