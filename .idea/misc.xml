@@ -6,7 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/elasticsearch-demo/pom.xml" />
-        <option value="$PROJECT_DIR$/es-high-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/es-high-level-demo/pom.xml" />
       </list>
     </option>
   </component>
