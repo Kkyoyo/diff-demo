@@ -1,13 +1,23 @@
 package xyz.kkyoyo.eshighleveldemo.config;
 
+import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.message.BasicHeader;
+import org.elasticsearch.client.Node;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import sun.jvm.hotspot.memory.HeapBlock;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  * @Author: Kyokyo
  * @Date: 2020-4-10
  */
+@Configuration
+@PropertySource("classpath:es-config.properties")
 public class RestHighLevelClientConfig {
     @Value("${es.host}")
     private String host;
@@ -30,7 +40,7 @@ public class RestHighLevelClientConfig {
                 new HttpHost(host, port, scheme)
         );
 
-        HeapBlock.Header[] defaultHeaders = new HeapBlock.Header[]{
+        Header[] defaultHeaders = new Header[]{
                 new BasicHeader("Accept", "*/*"),
                 new BasicHeader("Charset", charSet),
                 //设置token 是为了安全 网关可以验证token来决定是否发起请求 我们这里只做象征性配置
