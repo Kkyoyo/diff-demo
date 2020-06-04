@@ -7,20 +7,27 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="diff-demo" />
+        <module name="database-demo" />
+        <module name="demo-common" />
         <module name="elasticsearch-demo" />
+        <module name="javafaker" />
         <module name="es-high-level-demo" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="es-high-demo" target="11" />
+    <bytecodeTargetLevel target="11">
+      <module name="code-generator" target="11" />
+      <module name="diff-common" target="1.5" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="code-generator" options="-parameters" />
+      <module name="database-demo" options="-parameters" />
+      <module name="demo-common" options="-parameters" />
+      <module name="diff-common" options="-parameters" />
       <module name="elasticsearch-demo" options="-parameters" />
-      <module name="es-high-demo" options="-parameters" />
       <module name="es-high-level-demo" options="-parameters" />
+      <module name="javafaker" options="-parameters" />
     </option>
   </component>
 </project>

@@ -1,6 +1,7 @@
 package xyz.kkyoyo.eshighleveldemo.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -8,6 +9,7 @@ import java.util.Date;
  * @Author: Kyokyo
  * @Date: 2020-4-13
  */
+@Data
 public class Cloth {
     @JSONField(ordinal = 0)
     private String id;
@@ -36,53 +38,6 @@ public class Cloth {
         this.date = date;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public Integer getNum() {
-        return num;
-    }
-
-    public void setNum(Integer num) {
-        this.num = num;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
 
     @Override
     public String toString() {

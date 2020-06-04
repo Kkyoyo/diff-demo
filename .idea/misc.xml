@@ -7,7 +7,14 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/elasticsearch-demo/pom.xml" />
         <option value="$PROJECT_DIR$/es-high-level-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/database-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/javafaker/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/code-generator/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11.0.5" project-jdk-type="JavaSDK">

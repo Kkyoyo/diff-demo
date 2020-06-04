@@ -3,6 +3,7 @@ package xyz.kkyoyo.eshighleveldemo.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.log4j.Log4j2;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -20,18 +21,26 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.ml.job.results.Bucket;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.UpdateByQueryRequest;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import xyz.kkyoyo.eshighleveldemo.domain.AggretionResult;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +48,7 @@ import java.util.Map;
  * @Date: 2020-4-13
  */
 @Service
+@Log4j2
 public class RestHighLevelService {
     @Qualifier("restHighLevelClient")
     @Autowired
@@ -237,4 +247,69 @@ public class RestHighLevelService {
         }
         return client.bulk(request, RequestOptions.DEFAULT);
     }
+
+    public void test_agg(String indexNames) throws IOException {
+        SearchRequest request = new SearchRequest(indexNames);
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        AggregationBuilder aggregationBuilder = AggregationBuilders.terms("O-aggs").field("OriginAirportID").size(10);
+        sourceBuilder.aggregation(aggregationBuilder);
+        sourceBuilder.size(0);
+        request.source(sourceBuilder);
+        SearchResponse res = client.search(request,RequestOptions.DEFAULT);
+        JSONObject json = JSON.parseObject(res.toString());
+
+        log.info(json);
+    }
+
+    public  void testMonet(String indexNames) throws IOException {
+        SearchRequest request = new SearchRequest(indexNames);
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.query(QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery("SALDATE").format("dd/MM/yyyy||yyyy||yyyyMMdd").gte("20190511").lte("20191111")));
+        AggregationBuilder aggregationBuilder = AggregationBuilders.terms("one").field("TRUE_OD_ORIG.keyword").size(10)
+                .subAggregation(AggregationBuilders.terms("two").field("AGENT_NAME.keyword").size(10)
+                .subAggregation(AggregationBuilders.terms("three").field("SALDATE").size(10)));
+        sourceBuilder.aggregation(aggregationBuilder);
+        sourceBuilder.size(0);
+        request.source(sourceBuilder);
+        SearchResponse res = client.search(request,RequestOptions.DEFAULT);
+        JSONObject json = JSON.parseObject(res.toString());
+        JSONObject aggOne = json.getJSONObject("aggregations").getJSONObject("sterms#one");
+        JSONArray aggTwo = aggOne.getJSONArray("buckets");
+        AggretionResult test = JSON.parseObject(res.toString(), AggretionResult.class);
+        Map<String,Map<String,Map<String,Integer>>> resMap = firstBucketParse(test);
+
+
+
+        log.info(json);
+
+    }
+
+    public Map<String,Map<String,Map<String,Integer>>> firstBucketParse(AggretionResult aggs){
+        Map<String,Map<String,Map<String,Integer>>> resMap = new HashMap<>();
+        List<AggretionResult.AggregationsBean.oneBean.BucketsBeanXX> firstBucket = aggs.getAggregations().getOne().getBuckets();
+        firstBucket.forEach(e -> resMap.put(e.getKey(),secondBucketParse(e)));
+        return resMap;
+    }
+
+    public Map<String,Map<String,Integer>> secondBucketParse(AggretionResult.AggregationsBean.oneBean.BucketsBeanXX buckets){
+        Map<String,Map<String,Integer>> resSecondMap = new HashMap<>();
+        List<AggretionResult.AggregationsBean.oneBean.BucketsBeanXX.twoBean.BucketsBeanX> secondBucket = buckets.getTwo().getBuckets();
+        secondBucket.forEach(e -> resSecondMap.put(e.getKey(),thirdBucketParse(e)));
+        return resSecondMap;
+    }
+
+    public Map<String,Integer> thirdBucketParse(AggretionResult.AggregationsBean.oneBean.BucketsBeanXX.twoBean.BucketsBeanX buckets){
+        Map<String,Integer> resThirdMap = new HashMap<>();
+        List<AggretionResult.AggregationsBean.oneBean.BucketsBeanXX.twoBean.BucketsBeanX.threeBean.BucketsBean> thirdBucket = buckets.getThree().getBuckets();
+        for (AggretionResult.AggregationsBean.oneBean.BucketsBeanXX.twoBean.BucketsBeanX.threeBean.BucketsBean bucket : thirdBucket){
+            resThirdMap.put(bucket.getKey(),bucket.getDoc_count());
+        }
+        return resThirdMap;
+    }
+
+
+
+
+
+
 }
