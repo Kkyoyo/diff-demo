@@ -89,4 +89,13 @@ public class FakerTest extends JavafakerApplicationTests{
 
     }
 
+    @Test
+    public void faker2(){
+        String eventQMes = "8/7ure";
+        String a =  StringUtils.getDigits("M/7");
+
+        String[] eventQList = StringUtils.split(eventQMes, ",");
+        log.info(eventQList.toString());
+    }
+
 }
